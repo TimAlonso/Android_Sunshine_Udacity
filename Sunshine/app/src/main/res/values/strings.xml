@@ -8,8 +8,8 @@
     <string name="title_activity_detail">DetailActivity</string>
 
     <!-- Preferences -->
-    <string name="pref_location_label">Location</string>
-    <string name="pref_location_key"></string>
-    <string name="pref_default_value">Manchester</string>
+    <string name="pref_location_key" translatable="false">location</string>
+    <string name="pref_default_value" translatable="false">94043</string>
+    <string name="pref_location_default">Manchester</string>
 
 </resources>

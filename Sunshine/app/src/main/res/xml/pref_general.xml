@@ -7,7 +7,7 @@
         android:defaultValue="true" />
 
     <EditTextPreference
-        android:title="@string/pref_location_label"
+        android:title="@string/pref_location_default"
         android:key="@string/pref_location_key"
         android:defaultValue="@string/pref_default_value"
         android:inputType="text"
