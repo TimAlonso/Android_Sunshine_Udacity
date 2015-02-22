@@ -1,5 +1,8 @@
 package com.example.talonso.sunshine;
 
+    import android.content.Intent;
+    import android.content.SharedPreferences;
+    import android.net.Uri;
     import android.os.Bundle;
     import android.preference.ListPreference;
     import android.preference.Preference;
