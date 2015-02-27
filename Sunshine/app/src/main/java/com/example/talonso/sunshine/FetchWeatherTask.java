@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.talonso.sunshine.data;
+package com.example.talonso.sunshine;
 
         import android.content.ContentValues;
         import android.content.Context;
