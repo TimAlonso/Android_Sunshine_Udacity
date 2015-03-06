@@ -28,8 +28,17 @@ import android.widget.TextView;
 import java.util.Date;
 
 public class ForecastAdapter extends CursorAdapter {
+
+    private final int VIEW_TYPE_TODAY = 0;
+    private final int VIEW_TYPE_FUTURE_DAY = 1;
+
     public ForecastAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return (position == 0) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
     }
 
     /*
@@ -37,9 +46,18 @@ public class ForecastAdapter extends CursorAdapter {
      */
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.list_item_forecast, parent, false);
+        // Choose the layout type
+        int viewType = getItemViewType(cursor.getPosition());
+        int layoutId = -1;
 
-        return view;
+        View view = null;
+        if (viewType == 0) {
+            layoutId = R.layout.list_item_forecast_today;
+        } else {
+            layoutId = R.layout.list_item_forecast;
+        }
+
+        return LayoutInflater.from(context).inflate(layoutId, parent, false);
     }
 
     /*
