@@ -16,14 +16,14 @@
 
 package com.example.talonso.sunshine;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.text.format.Time;
+    import android.content.Context;
+    import android.content.SharedPreferences;
+    import android.preference.PreferenceManager;
+    import android.text.format.Time;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+    import java.text.DateFormat;
+    import java.text.SimpleDateFormat;
+    import java.util.Date;
 
 public class Utility {
 
