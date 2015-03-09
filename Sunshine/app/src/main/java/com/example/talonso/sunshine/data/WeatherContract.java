@@ -49,12 +49,12 @@ public class WeatherContract {
     public static long normalizeDate(long startDate) {
         // normalize the start date to the beginning of the (UTC) day
         Time time = new Time();
-        time.setToNow();
+        time.set(startDate);
         int julianDay = Time.getJulianDay(startDate, time.gmtoff);
         return time.setJulianDay(julianDay);
     }
 
-    /* Inner class that defines the contents of the location table */
+    /* Inner class that defines the table contents of the location table */
     public static final class LocationEntry implements BaseColumns {
 
         public static final Uri CONTENT_URI =
@@ -131,7 +131,7 @@ public class WeatherContract {
         }
 
         /*
-            Student: Fill in this buildWeatherLocation function
+            Student: This is the buildWeatherLocation function you filled in.
          */
         public static Uri buildWeatherLocation(String locationSetting) {
             return CONTENT_URI.buildUpon().appendPath(locationSetting).build();

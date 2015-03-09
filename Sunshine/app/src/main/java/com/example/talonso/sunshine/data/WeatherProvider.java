@@ -15,14 +15,14 @@
  */
 package com.example.talonso.sunshine.data;
 
-        import android.annotation.TargetApi;
-        import android.content.ContentProvider;
-        import android.content.ContentValues;
-        import android.content.UriMatcher;
-        import android.database.Cursor;
-        import android.database.sqlite.SQLiteDatabase;
-        import android.database.sqlite.SQLiteQueryBuilder;
-        import android.net.Uri;
+import android.annotation.TargetApi;
+import android.content.ContentProvider;
+import android.content.ContentValues;
+import android.content.UriMatcher;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
+import android.net.Uri;
 
 public class WeatherProvider extends ContentProvider {
 
@@ -39,6 +39,9 @@ public class WeatherProvider extends ContentProvider {
 
     static{
         sWeatherByLocationSettingQueryBuilder = new SQLiteQueryBuilder();
+
+        //This is an inner join which looks like
+        //weather INNER JOIN location ON weather.location_id = location._id
         sWeatherByLocationSettingQueryBuilder.setTables(
                 WeatherContract.WeatherEntry.TABLE_NAME + " INNER JOIN " +
                         WeatherContract.LocationEntry.TABLE_NAME +
@@ -48,14 +51,18 @@ public class WeatherProvider extends ContentProvider {
                         "." + WeatherContract.LocationEntry._ID);
     }
 
+    //location.location_setting = ?
     private static final String sLocationSettingSelection =
             WeatherContract.LocationEntry.TABLE_NAME+
                     "." + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? ";
+
+    //location.location_setting = ? AND date >= ?
     private static final String sLocationSettingWithStartDateSelection =
             WeatherContract.LocationEntry.TABLE_NAME+
                     "." + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? AND " +
                     WeatherContract.WeatherEntry.COLUMN_DATE + " >= ? ";
 
+    //location.location_setting = ? AND date = ?
     private static final String sLocationSettingAndDaySelection =
             WeatherContract.LocationEntry.TABLE_NAME +
                     "." + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? AND " +
@@ -108,12 +115,19 @@ public class WeatherProvider extends ContentProvider {
         testUriMatcher test within TestUriMatcher.
      */
     static UriMatcher buildUriMatcher() {
+        // I know what you're thinking.  Why create a UriMatcher when you can use regular
+        // expressions instead?  Because you're not crazy, that's why.
+
+        // All paths added to the UriMatcher have a corresponding code to return when a match is
+        // found.  The code passed into the constructor represents the code to return for the root
+        // URI.  It's common to use NO_MATCH as the code for this case.
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = WeatherContract.CONTENT_AUTHORITY;
 
+        // For each type of URI you want to add, create a corresponding code.
         matcher.addURI(authority, WeatherContract.PATH_WEATHER, WEATHER);
         matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*", WEATHER_WITH_LOCATION);
-        matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*/#", WEATHER_WITH_LOCATION);
+        matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*/#", WEATHER_WITH_LOCATION_AND_DATE);
 
         matcher.addURI(authority, WeatherContract.PATH_LOCATION, LOCATION);
         return matcher;
@@ -140,6 +154,7 @@ public class WeatherProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
 
         switch (match) {
+            // Student: Uncomment and fill out these two cases
             case WEATHER_WITH_LOCATION_AND_DATE:
                 return WeatherContract.WeatherEntry.CONTENT_ITEM_TYPE;
             case WEATHER_WITH_LOCATION:
@@ -225,9 +240,8 @@ public class WeatherProvider extends ContentProvider {
                 break;
             }
             case LOCATION: {
-                normalizeDate(values);
                 long _id = db.insert(WeatherContract.LocationEntry.TABLE_NAME, null, values);
-                if (_id > 0)
+                if ( _id > 0 )
                     returnUri = WeatherContract.LocationEntry.buildLocationUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
@@ -245,24 +259,21 @@ public class WeatherProvider extends ContentProvider {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         int rowsDeleted;
-        if (null == selection) selection = "1";
-
+        // this makes delete all rows return the number of rows deleted
+        if ( null == selection ) selection = "1";
         switch (match) {
-            case WEATHER: {
+            case WEATHER:
                 rowsDeleted = db.delete(
-                        WeatherContract.WeatherEntry.TABLE_NAME, selection, selectionArgs
-                );
+                        WeatherContract.WeatherEntry.TABLE_NAME, selection, selectionArgs);
                 break;
-            }
-            case LOCATION: {
+            case LOCATION:
                 rowsDeleted = db.delete(
-                        WeatherContract.LocationEntry.TABLE_NAME, selection, selectionArgs
-                );
-            }
+                        WeatherContract.LocationEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-
+        // Because a null deletes all rows
         if (rowsDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
@@ -286,22 +297,19 @@ public class WeatherProvider extends ContentProvider {
         int rowsUpdated;
 
         switch (match) {
-            case WEATHER: {
-                rowsUpdated = db.update(
-                        WeatherContract.WeatherEntry.TABLE_NAME, values, selection, selectionArgs
-                );
+            case WEATHER:
+                normalizeDate(values);
+                rowsUpdated = db.update(WeatherContract.WeatherEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
                 break;
-            }
-            case LOCATION: {
-                rowsUpdated = db.update(
-                        WeatherContract.LocationEntry.TABLE_NAME, values, selection, selectionArgs
-                );
-            }
+            case LOCATION:
+                rowsUpdated = db.update(WeatherContract.LocationEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-
-        if (rowsUpdated > 0) {
+        if (rowsUpdated != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
 

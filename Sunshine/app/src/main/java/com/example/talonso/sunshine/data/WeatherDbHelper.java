@@ -15,12 +15,12 @@
  */
 package com.example.talonso.sunshine.data;
 
-        import android.content.Context;
-        import android.database.sqlite.SQLiteDatabase;
-        import android.database.sqlite.SQLiteOpenHelper;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
-        import com.example.talonso.sunshine.data.WeatherContract.LocationEntry;
-        import com.example.talonso.sunshine.data.WeatherContract.WeatherEntry;
+import com.example.talonso.sunshine.data.WeatherContract.LocationEntry;
+import com.example.talonso.sunshine.data.WeatherContract.WeatherEntry;
 
 /**
  * Manages a local database for weather data.
@@ -47,6 +47,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
                 LocationEntry.COLUMN_COORD_LAT + " REAL NOT NULL, " +
                 LocationEntry.COLUMN_COORD_LONG + " REAL NOT NULL " +
                 " );";
+
         final String SQL_CREATE_WEATHER_TABLE = "CREATE TABLE " + WeatherEntry.TABLE_NAME + " (" +
                 // Why AutoIncrement here, and not above?
                 // Unique keys will be auto-generated in either case.  But for weather
